@@ -127,15 +127,16 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         switch (state) {
             case GLUT_DOWN:
-                // first box corner
+                // box corner
                 box[0] = x;
                 box[1] = y;
 
-                // second box corner
+                // box corner
                 box[2] = x;
                 box[3] = y;
 
                 drawBox = GL_TRUE;
+
                 break;
             case GLUT_UP:
 		// swap if necessary

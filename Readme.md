@@ -2,7 +2,7 @@
 
 ## Description
 
-This is an old, classic, simple Mandelbrot Fractal generator using OpenGL and GLUT. I wrote this programm to learn how to modify pixels using OpenGL.
+This is an old, classic, simple Mandelbrot Fractal generator using OpenGL and GLUT. I wrote this program to learn how to modify pixels using OpenGL.
 
 ![Mandelbrot](images/Mandelbrot.jpeg)
 
