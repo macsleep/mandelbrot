@@ -45,7 +45,7 @@ static GLubyte *pixels;
 static GLdouble mx_min, mx_max, my_min, my_max;
 static GLdouble mx_min_orig = MX_MIN, mx_max_orig = MX_MAX, my_min_orig = MY_MIN, my_max_orig = MY_MAX;
 static GLboolean drawBox = GL_FALSE;
-static GLuint box[] = {0, 0, 0, 0};
+static GLuint box[] = { 0, 0, 0, 0 };
 
 /* Function Prototypes */
 
