@@ -96,6 +96,10 @@ void reshape(int w, int h) {
     // image buffer
     size = w * h * 4 * sizeof (GLubyte);
     pixels = realloc(pixels, size);
+    if(pixels == NULL) {
+        fprintf(stderr, "realloc failed\n");
+        exit(1);
+    }
     for (i = 0; i < size; i++) pixels[i] = 0;
 
     // calculate
@@ -139,19 +143,22 @@ void mouse(int button, int state, int x, int y) {
 
                 break;
             case GLUT_UP:
-		// swap if necessary
-		if(box[0] > box[2]) {
-			tmp = box[0];
-			box[0] = box[2];
-			box[2] = tmp;
-		}
-		if(box[1] > box[3]) {
-			tmp = box[1];
-			box[1] = box[3];
-			box[3] = tmp;
-		}
+                // check zoom
+                if(box[0] == box[2] || box[1] == box[3]) break;
 
-		// convert box to Mandelbrot coordinates
+                // swap if necessary
+                if(box[0] > box[2]) {
+                        tmp = box[0];
+                        box[0] = box[2];
+                        box[2] = tmp;
+                }
+                if(box[1] > box[3]) {
+                        tmp = box[1];
+                        box[1] = box[3];
+                        box[3] = tmp;
+                }
+
+                // convert box to Mandelbrot coordinates
                 pixel2mandel(box[0], h - box[1], &mx_min_orig, &my_max_orig);
                 pixel2mandel(box[2], h - box[3], &mx_max_orig, &my_min_orig);
 
@@ -167,7 +174,7 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_RIGHT_BUTTON) {
         switch (state) {
             case GLUT_UP:
-		// restore defaults
+                // restore defaults
                 mx_min_orig = MX_MIN;
                 mx_max_orig = MX_MAX;
                 my_min_orig = MY_MIN;
