@@ -39,7 +39,7 @@ void display(void) {
     glRasterPos2i(0, 0);
     glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-    // resize box
+    // zoom box
     if (drawBox) {
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
