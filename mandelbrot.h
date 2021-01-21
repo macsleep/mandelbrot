@@ -28,8 +28,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+
+#ifdef DARWIN
 #include <GLUT/glut.h>
-// #include <GL/glut.h>
+#endif
+
+#ifdef LINUX
+#include <GL/glut.h>
+#endif
 
 /* Macros */
 
