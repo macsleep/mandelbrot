@@ -43,10 +43,10 @@ void display(void) {
     if (drawBox) {
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        glVertex2i(box[0], h - box[1]);
-        glVertex2i(box[2], h - box[1]);
-        glVertex2i(box[2], h - box[3]);
-        glVertex2i(box[0], h - box[3]);
+        glVertex2i(box[0], (h - box[1]));
+        glVertex2i(box[2], (h - box[1]));
+        glVertex2i(box[2], (h - box[3]));
+        glVertex2i(box[0], (h - box[3]));
         glEnd();
     }
 
@@ -61,7 +61,7 @@ void reset(void) {
     w = glutGet(GLUT_WINDOW_WIDTH);
     h = glutGet(GLUT_WINDOW_HEIGHT);
 
-    // keep aspect
+    // respect aspect ratio
     w_ratio = (GLdouble) w / (GLdouble) h;
     m_ratio = (mx_max_orig - mx_min_orig) / (my_max_orig - my_min_orig);
     if (w_ratio > m_ratio) {
@@ -78,9 +78,9 @@ void reset(void) {
         my_max = my_min_orig + (my_max_orig - my_min_orig + mpp * (GLdouble) h) / 2.0;
     }
 
-    // start calculations
     px = 0;
     py = 0;
+    // start calculations
     glutIdleFunc(idle);
 }
 
@@ -93,16 +93,17 @@ void reshape(int w, int h) {
     glOrtho(0.0, w, 0.0, h, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
 
-    // image buffer
-    size = w * h * 4 * sizeof (GLubyte);
+    // allocate buffer
+    size = w * h * 4 * sizeof(GLubyte);
     pixels = realloc(pixels, size);
-    if(pixels == NULL) {
+    if (pixels == NULL) {
         fprintf(stderr, "realloc failed\n");
         exit(1);
     }
+
+    // zero buffer
     for (i = 0; i < size; i++) pixels[i] = 0;
 
-    // calculate
     reset();
 }
 
@@ -140,31 +141,29 @@ void mouse(int button, int state, int x, int y) {
                 box[3] = y;
 
                 drawBox = GL_TRUE;
-
                 break;
             case GLUT_UP:
                 // check zoom
-                if(box[0] == box[2] || box[1] == box[3]) break;
+                if (box[0] == box[2] || box[1] == box[3]) break;
 
                 // swap if necessary
-                if(box[0] > box[2]) {
-                        tmp = box[0];
-                        box[0] = box[2];
-                        box[2] = tmp;
+                if (box[0] > box[2]) {
+                    tmp = box[0];
+                    box[0] = box[2];
+                    box[2] = tmp;
                 }
-                if(box[1] > box[3]) {
-                        tmp = box[1];
-                        box[1] = box[3];
-                        box[3] = tmp;
+                if (box[1] > box[3]) {
+                    tmp = box[1];
+                    box[1] = box[3];
+                    box[3] = tmp;
                 }
 
                 // convert box to Mandelbrot coordinates
-                pixel2mandel(box[0], h - box[1], &mx_min_orig, &my_max_orig);
-                pixel2mandel(box[2], h - box[3], &mx_max_orig, &my_min_orig);
+                pixel2mandel(box[0], (h - box[1]), &mx_min_orig, &my_max_orig);
+                pixel2mandel(box[2], (h - box[3]), &mx_max_orig, &my_min_orig);
 
                 drawBox = GL_FALSE;
                 reset();
-
                 break;
             default:
                 break;
@@ -182,7 +181,6 @@ void mouse(int button, int state, int x, int y) {
 
                 drawBox = GL_FALSE;
                 reset();
-
                 break;
             default:
                 break;
@@ -204,10 +202,10 @@ void idle(void) {
     GLuint i = 0, imax = 0xfff, p;
     GLdouble x = 0.0, y = 0.0, mx, my, xtmp;
 
-    // pixel to Mandelbrot coordinates
+    // convert pixel coordinates
     pixel2mandel(px, py, &mx, &my);
 
-    // iterate
+    // iterate function
     while ((x*x + y*y <= 2*2) && (i < imax)) {
         xtmp = x*x - y*y + mx;
         y = 2 * x * y + my;
@@ -219,7 +217,7 @@ void idle(void) {
     if (i == imax) i = 0;
 
     // set color
-    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px)*4 * sizeof(GLubyte);
+    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof(GLubyte);
     pixels[p + 0] = (i & 0x00f) << 4;
     pixels[p + 1] = (i & 0x0f0);
     pixels[p + 2] = (i & 0xf00) >> 4;
@@ -228,8 +226,10 @@ void idle(void) {
     if (++px >= glutGet(GLUT_WINDOW_WIDTH)) {
         px = 0;
         if (++py >= glutGet(GLUT_WINDOW_HEIGHT)) {
-            glutIdleFunc(NULL);
             py = 0;
+
+            // stop calculations
+            glutIdleFunc(NULL);
         }
         glutPostRedisplay();
     }
