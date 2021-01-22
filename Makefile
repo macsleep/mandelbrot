@@ -9,11 +9,11 @@ CFLAGS = -O3 -Wno-deprecated-declarations
 LDFLAGS =
 
 # MacOS
-CFLAGS += -DDARWIN
+CFLAGS += -DDarwin
 LDFLAGS += -framework GLUT -framework OpenGL
 
 # Linux
-# CFLAGS += -DLINUX
+# CFLAGS += -DLinux
 # LDFLAGS += -lGL -lGLU -lglut
 
 mandelbrot:	$(OBJ)

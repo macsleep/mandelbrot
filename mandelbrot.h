@@ -29,11 +29,11 @@
 #include <stdlib.h>
 #include <math.h>
 
-#ifdef DARWIN
+#ifdef Darwin
 #include <GLUT/glut.h>
 #endif
 
-#ifdef LINUX
+#ifdef Linux
 #include <GL/glut.h>
 #endif
 
