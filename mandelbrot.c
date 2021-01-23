@@ -216,11 +216,11 @@ void idle(void) {
     // imax equals black
     if (i == imax) i = 0;
 
-    // set color
+    // pixel color
     p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof(GLubyte);
-    pixels[p + 0] = (i & 0x00f) << 4;
-    pixels[p + 1] = (i & 0x0f0);
-    pixels[p + 2] = (i & 0xf00) >> 4;
+    pixels[p + 0] = (i & 0x00f) << 4;    // red
+    pixels[p + 1] = (i & 0x0f0);         // green
+    pixels[p + 2] = (i & 0xf00) >> 4;    // blue
 
     // next pixel
     if (++px >= glutGet(GLUT_WINDOW_WIDTH)) {
