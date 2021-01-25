@@ -124,6 +124,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 void mouse(int button, int state, int x, int y) {
     GLint w, h, tmp;
+    GLdouble x_center, y_center;
 
     // window size
     w = glutGet(GLUT_WINDOW_WIDTH);
@@ -143,24 +144,31 @@ void mouse(int button, int state, int x, int y) {
                 drawBox = GL_TRUE;
                 break;
             case GLUT_UP:
-                // check zoom
-                if (box[0] == box[2] || box[1] == box[3]) break;
+                if (box[0] == box[2] || box[1] == box[3]) {
+                    pixel2mandel(box[0], (h - box[1]), &x_center, &y_center);
 
-                // swap if necessary
-                if (box[0] > box[2]) {
-                    tmp = box[0];
-                    box[0] = box[2];
-                    box[2] = tmp;
-                }
-                if (box[1] > box[3]) {
-                    tmp = box[1];
-                    box[1] = box[3];
-                    box[3] = tmp;
-                }
+                    // center around mouse click
+                    mx_min_orig = x_center - (mx_max - mx_min)/2.0;
+                    my_min_orig = y_center - (my_max - my_min)/2.0;
+                    mx_max_orig = x_center + (mx_max - mx_min)/2.0;
+                    my_max_orig = y_center + (my_max - my_min)/2.0;
+		} else {
+                    // swap if necessary
+                    if (box[0] > box[2]) {
+                        tmp = box[0];
+                        box[0] = box[2];
+                        box[2] = tmp;
+                    }
+                    if (box[1] > box[3]) {
+                        tmp = box[1];
+                        box[1] = box[3];
+                        box[3] = tmp;
+                    }
 
-                // convert box to Mandelbrot coordinates
-                pixel2mandel(box[0], (h - box[1]), &mx_min_orig, &my_max_orig);
-                pixel2mandel(box[2], (h - box[3]), &mx_max_orig, &my_min_orig);
+                    // zoom in on box
+                    pixel2mandel(box[0], (h - box[1]), &mx_min_orig, &my_max_orig);
+                    pixel2mandel(box[2], (h - box[3]), &mx_max_orig, &my_min_orig);
+		}
 
                 drawBox = GL_FALSE;
                 reset();
