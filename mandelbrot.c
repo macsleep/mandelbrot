@@ -94,7 +94,7 @@ void reshape(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
 
     // allocate buffer
-    size = w * h * 4 * sizeof(GLubyte);
+    size = w * h * 4 * sizeof (GLubyte);
     pixels = realloc(pixels, size);
     if (pixels == NULL) {
         fprintf(stderr, "realloc failed\n");
@@ -148,11 +148,11 @@ void mouse(int button, int state, int x, int y) {
                     pixel2mandel(box[0], (h - box[1]), &x_center, &y_center);
 
                     // center around mouse click
-                    mx_min_orig = x_center - (mx_max - mx_min)/2.0;
-                    my_min_orig = y_center - (my_max - my_min)/2.0;
-                    mx_max_orig = x_center + (mx_max - mx_min)/2.0;
-                    my_max_orig = y_center + (my_max - my_min)/2.0;
-		} else {
+                    mx_min_orig = x_center - (mx_max - mx_min) / 2.0;
+                    my_min_orig = y_center - (my_max - my_min) / 2.0;
+                    mx_max_orig = x_center + (mx_max - mx_min) / 2.0;
+                    my_max_orig = y_center + (my_max - my_min) / 2.0;
+                } else {
                     // swap if necessary
                     if (box[0] > box[2]) {
                         tmp = box[0];
@@ -168,7 +168,7 @@ void mouse(int button, int state, int x, int y) {
                     // zoom in on box
                     pixel2mandel(box[0], (h - box[1]), &mx_min_orig, &my_max_orig);
                     pixel2mandel(box[2], (h - box[3]), &mx_max_orig, &my_min_orig);
-		}
+                }
 
                 drawBox = GL_FALSE;
                 reset();
@@ -225,10 +225,10 @@ void idle(void) {
     if (i == imax) i = 0;
 
     // pixel color
-    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof(GLubyte);
-    pixels[p + 0] = (i & 0x00f) << 4;    // red
-    pixels[p + 1] = (i & 0x0f0);         // green
-    pixels[p + 2] = (i & 0xf00) >> 4;    // blue
+    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof (GLubyte);
+    pixels[p + 0] = (i & 0x00f) << 4; // red
+    pixels[p + 1] = (i & 0x0f0);      // green
+    pixels[p + 2] = (i & 0xf00) >> 4; // blue
 
     // next pixel
     if (++px >= glutGet(GLUT_WINDOW_WIDTH)) {
