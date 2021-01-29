@@ -124,7 +124,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 void mouse(int button, int state, int x, int y) {
     GLint w, h, tmp;
-    GLdouble x_center, y_center;
+    GLdouble x_center, y_center, x_half, y_half;
 
     // window size
     w = glutGet(GLUT_WINDOW_WIDTH);
@@ -147,11 +147,14 @@ void mouse(int button, int state, int x, int y) {
                 if (box[0] == box[2] || box[1] == box[3]) {
                     pixel2mandel(box[0], (h - box[1]), &x_center, &y_center);
 
+                    x_half = (mx_max - mx_min) / 2.0;
+                    y_half = (my_max - my_min) / 2.0;
+
                     // center around mouse click
-                    mx_min_orig = x_center - (mx_max - mx_min) / 2.0;
-                    my_min_orig = y_center - (my_max - my_min) / 2.0;
-                    mx_max_orig = x_center + (mx_max - mx_min) / 2.0;
-                    my_max_orig = y_center + (my_max - my_min) / 2.0;
+                    mx_min_orig = x_center - x_half;
+                    my_min_orig = y_center - y_half;
+                    mx_max_orig = x_center + x_half;
+                    my_max_orig = y_center + y_half;
                 } else {
                     // swap if necessary
                     if (box[0] > box[2]) {
