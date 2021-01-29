@@ -65,17 +65,17 @@ void reset(void) {
     w_ratio = (GLdouble) w / (GLdouble) h;
     m_ratio = (mx_max_orig - mx_min_orig) / (my_max_orig - my_min_orig);
     if (w_ratio > m_ratio) {
-        mpp = (my_max_orig - my_min_orig) / (GLdouble) h;
-        mx_min = mx_min_orig + (mx_max_orig - mx_min_orig - mpp * (GLdouble) w) / 2.0;
-        mx_max = mx_min_orig + (mx_max_orig - mx_min_orig + mpp * (GLdouble) w) / 2.0;
+        mpp = (my_max_orig - my_min_orig) / (GLdouble) h * (GLdouble) w;
+        mx_min = mx_min_orig + (mx_max_orig - mx_min_orig - mpp) / 2.0;
+        mx_max = mx_min_orig + (mx_max_orig - mx_min_orig + mpp) / 2.0;
         my_max = my_max_orig;
         my_min = my_min_orig;
     } else {
         mx_max = mx_max_orig;
         mx_min = mx_min_orig;
-        mpp = (mx_max_orig - mx_min_orig) / (GLdouble) w;
-        my_min = my_min_orig + (my_max_orig - my_min_orig - mpp * (GLdouble) h) / 2.0;
-        my_max = my_min_orig + (my_max_orig - my_min_orig + mpp * (GLdouble) h) / 2.0;
+        mpp = (mx_max_orig - mx_min_orig) / (GLdouble) w * (GLdouble) h;
+        my_min = my_min_orig + (my_max_orig - my_min_orig - mpp) / 2.0;
+        my_max = my_min_orig + (my_max_orig - my_min_orig + mpp) / 2.0;
     }
 
     px = 0;
