@@ -8,7 +8,7 @@ This is an old, classic, simple [Mandelbrot](https://en.wikipedia.org/wiki/Mande
 
 ## Build
 
-Clone or download the software. Make sure the required OpenGL and GLUT libraries are installed. Edit the Makefile to enable the OS specific variables of your platform and then type `make` to build. The build is known to work on MacOS (10.12) and Ubuntu (18.04.5).
+Clone or download the software. Make sure the required OpenGL and GLUT headers/libraries are installed. Edit the Makefile to enable the OS specific variables of your platform and then type `make` to build. The build is known to work on MacOS (10.12) and Ubuntu (18.04.5).
 
 ## Usage
 
