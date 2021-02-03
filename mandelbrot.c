@@ -35,11 +35,11 @@ void display(void) {
 
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Mandelbrot
+    // draw mandelbrot
     glRasterPos2i(0, 0);
     glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
-    // zoom box
+    // draw zoom box
     if (drawBox) {
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
@@ -78,8 +78,10 @@ void reset(void) {
         my_max = my_min_orig + (my_max_orig - my_min_orig + mpp) / 2.0;
     }
 
+    // reset coordinates
     px = 0;
     py = 0;
+
     // start calculations
     glutIdleFunc(idle);
 }
@@ -108,6 +110,7 @@ void reshape(int w, int h) {
 }
 
 void pixel2mandel(int px, int py, double *mx, double *my) {
+    // convert pixel coordinates to mandelbrot coordinates
     *mx = ((GLdouble) px / glutGet(GLUT_WINDOW_WIDTH) * (mx_max - mx_min)) + mx_min;
     *my = ((GLdouble) py / glutGet(GLUT_WINDOW_HEIGHT) * (my_max - my_min)) + my_min;
 }
@@ -133,11 +136,11 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         switch (state) {
             case GLUT_DOWN:
-                // box corner
+                // first corner
                 box[0] = x;
                 box[1] = y;
 
-                // box corner
+                // second corner
                 box[2] = x;
                 box[3] = y;
 
@@ -202,10 +205,11 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void motion(int x, int y) {
-    // box corner
+    // update second corner
     box[2] = x;
     box[3] = y;
 
+    // draw zoom box
     glutPostRedisplay();
 }
 
@@ -213,10 +217,9 @@ void idle(void) {
     GLuint i = 0, imax = 0xfff, p;
     GLdouble x = 0.0, y = 0.0, mx, my, xtmp;
 
-    // convert pixel coordinates
     pixel2mandel(px, py, &mx, &my);
 
-    // iterate function
+    // iterate mandelbrot function
     while ((x*x + y*y <= 2*2) && (i < imax)) {
         xtmp = x*x - y*y + mx;
         y = 2 * x * y + my;
@@ -225,10 +228,12 @@ void idle(void) {
     }
 
     // imax equals black
-    if (i == imax) i = 0;
+    if (i >= imax) i = 0;
+
+    // pixel pointer
+    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof (GLubyte);
 
     // pixel color
-    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof (GLubyte);
     pixels[p + 0] = (i & 0x00f) << 4; // red
     pixels[p + 1] = (i & 0x0f0);      // green
     pixels[p + 2] = (i & 0xf00) >> 4; // blue
@@ -242,6 +247,8 @@ void idle(void) {
             // stop calculations
             glutIdleFunc(NULL);
         }
+
+        // new madelbrot line
         glutPostRedisplay();
     }
 }
