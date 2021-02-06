@@ -189,8 +189,8 @@ void mouse(int button, int state, int x, int y) {
             case GLUT_UP:
                 // restore defaults
                 master.x1 = MX_MIN;
-                master.x2 = MX_MAX;
                 master.y1 = MY_MIN;
+                master.x2 = MX_MAX;
                 master.y2 = MY_MAX;
 
                 drawBox = GL_FALSE;
