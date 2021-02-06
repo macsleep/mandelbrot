@@ -118,6 +118,7 @@ void pixel2mandel(int px, int py, double *mx, double *my) {
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 27:
+            free(pixels);
             exit(0);
             break;
         default:
