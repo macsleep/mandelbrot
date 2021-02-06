@@ -248,7 +248,7 @@ void idle(void) {
             glutIdleFunc(NULL);
         }
 
-        // new madelbrot line
+        // new mandelbrot line
         glutPostRedisplay();
     }
 }
