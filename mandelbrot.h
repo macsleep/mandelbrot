@@ -51,13 +51,13 @@ typedef struct {
 
 typedef struct {
     GLdouble x1, y1, x2, y2;
-} box4f;
+} box4d;
 
 /* Global Variables */
 
 static GLuint px = 0, py = 0;
 static GLubyte *pixels;
-static box4f actual, master = { MX_MIN, MY_MIN, MX_MAX, MY_MAX };
+static box4d actual, master = { MX_MIN, MY_MIN, MX_MAX, MY_MAX };
 static GLboolean drawBox = GL_FALSE;
 static box4i box = { 0, 0, 0, 0 };
 
