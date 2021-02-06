@@ -43,14 +43,23 @@
 #define MY_MIN -1.25
 #define MY_MAX 1.25
 
+/* Type Definitions */
+
+typedef struct {
+    GLuint x1, y1, x2, y2;
+} box4i;
+
+typedef struct {
+    GLdouble x1, y1, x2, y2;
+} box4f;
+
 /* Global Variables */
 
 static GLuint px = 0, py = 0;
 static GLubyte *pixels;
-static GLdouble mx_min, mx_max, my_min, my_max;
-static GLdouble mx_min_orig = MX_MIN, mx_max_orig = MX_MAX, my_min_orig = MY_MIN, my_max_orig = MY_MAX;
+static box4f actual, master = { MX_MIN, MY_MIN, MX_MAX, MY_MAX };
 static GLboolean drawBox = GL_FALSE;
-static GLuint box[] = { 0, 0, 0, 0 };
+static box4i box = { 0, 0, 0, 0 };
 
 /* Function Prototypes */
 

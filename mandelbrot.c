@@ -43,10 +43,10 @@ void display(void) {
     if (drawBox) {
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        glVertex2i(box[0], (h - box[1]));
-        glVertex2i(box[2], (h - box[1]));
-        glVertex2i(box[2], (h - box[3]));
-        glVertex2i(box[0], (h - box[3]));
+        glVertex2i(box.x1, (h - box.y1));
+        glVertex2i(box.x2, (h - box.y1));
+        glVertex2i(box.x2, (h - box.y2));
+        glVertex2i(box.x1, (h - box.y2));
         glEnd();
     }
 
@@ -63,19 +63,19 @@ void reset(void) {
 
     // respect aspect ratio
     w_ratio = (GLdouble) w / (GLdouble) h;
-    m_ratio = (mx_max_orig - mx_min_orig) / (my_max_orig - my_min_orig);
+    m_ratio = (master.x2 - master.x1) / (master.y2 - master.y1);
     if (w_ratio > m_ratio) {
-        mpp = (my_max_orig - my_min_orig) / (GLdouble) h * (GLdouble) w;
-        mx_min = mx_min_orig + (mx_max_orig - mx_min_orig - mpp) / 2.0;
-        mx_max = mx_min_orig + (mx_max_orig - mx_min_orig + mpp) / 2.0;
-        my_max = my_max_orig;
-        my_min = my_min_orig;
+        mpp = (master.y2 - master.y1) / (GLdouble) h * (GLdouble) w;
+        actual.x1 = master.x1 + (master.x2 - master.x1 - mpp) / 2.0;
+        actual.x2 = master.x1 + (master.x2 - master.x1 + mpp) / 2.0;
+        actual.y2 = master.y2;
+        actual.y1 = master.y1;
     } else {
-        mx_max = mx_max_orig;
-        mx_min = mx_min_orig;
-        mpp = (mx_max_orig - mx_min_orig) / (GLdouble) w * (GLdouble) h;
-        my_min = my_min_orig + (my_max_orig - my_min_orig - mpp) / 2.0;
-        my_max = my_min_orig + (my_max_orig - my_min_orig + mpp) / 2.0;
+        actual.x2 = master.x2;
+        actual.x1 = master.x1;
+        mpp = (master.x2 - master.x1) / (GLdouble) w * (GLdouble) h;
+        actual.y1 = master.y1 + (master.y2 - master.y1 - mpp) / 2.0;
+        actual.y2 = master.y1 + (master.y2 - master.y1 + mpp) / 2.0;
     }
 
     // reset coordinates
@@ -111,8 +111,8 @@ void reshape(int w, int h) {
 
 void pixel2mandel(int px, int py, double *mx, double *my) {
     // convert pixel coordinates to mandelbrot coordinates
-    *mx = ((GLdouble) px / glutGet(GLUT_WINDOW_WIDTH) * (mx_max - mx_min)) + mx_min;
-    *my = ((GLdouble) py / glutGet(GLUT_WINDOW_HEIGHT) * (my_max - my_min)) + my_min;
+    *mx = ((GLdouble) px / glutGet(GLUT_WINDOW_WIDTH) * (actual.x2 - actual.x1)) + actual.x1;
+    *my = ((GLdouble) py / glutGet(GLUT_WINDOW_HEIGHT) * (actual.y2 - actual.y1)) + actual.y1;
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -137,43 +137,43 @@ void mouse(int button, int state, int x, int y) {
         switch (state) {
             case GLUT_DOWN:
                 // first corner
-                box[0] = x;
-                box[1] = y;
+                box.x1 = x;
+                box.y1 = y;
 
                 // second corner
-                box[2] = x;
-                box[3] = y;
+                box.x2 = x;
+                box.y2 = y;
 
                 drawBox = GL_TRUE;
                 break;
             case GLUT_UP:
-                if (box[0] == box[2] || box[1] == box[3]) {
-                    pixel2mandel(box[0], (h - box[1]), &x_center, &y_center);
+                if (box.x1 == box.x2 || box.y1 == box.y2) {
+                    pixel2mandel(box.x1, (h - box.y1), &x_center, &y_center);
 
-                    x_half = (mx_max - mx_min) / 2.0;
-                    y_half = (my_max - my_min) / 2.0;
+                    x_half = (actual.x2 - actual.x1) / 2.0;
+                    y_half = (actual.y2 - actual.y1) / 2.0;
 
                     // center around mouse click
-                    mx_min_orig = x_center - x_half;
-                    my_min_orig = y_center - y_half;
-                    mx_max_orig = x_center + x_half;
-                    my_max_orig = y_center + y_half;
+                    master.x1 = x_center - x_half;
+                    master.y1 = y_center - y_half;
+                    master.x2 = x_center + x_half;
+                    master.y2 = y_center + y_half;
                 } else {
                     // swap if necessary
-                    if (box[0] > box[2]) {
-                        tmp = box[0];
-                        box[0] = box[2];
-                        box[2] = tmp;
+                    if (box.x1 > box.x2) {
+                        tmp = box.x1;
+                        box.x1 = box.x2;
+                        box.x2 = tmp;
                     }
-                    if (box[1] > box[3]) {
-                        tmp = box[1];
-                        box[1] = box[3];
-                        box[3] = tmp;
+                    if (box.y1 > box.y2) {
+                        tmp = box.y1;
+                        box.y1 = box.y2;
+                        box.y2 = tmp;
                     }
 
                     // zoom in on box
-                    pixel2mandel(box[0], (h - box[1]), &mx_min_orig, &my_max_orig);
-                    pixel2mandel(box[2], (h - box[3]), &mx_max_orig, &my_min_orig);
+                    pixel2mandel(box.x1, (h - box.y1), &master.x1, &master.y2);
+                    pixel2mandel(box.x2, (h - box.y2), &master.x2, &master.y1);
                 }
 
                 drawBox = GL_FALSE;
@@ -188,10 +188,10 @@ void mouse(int button, int state, int x, int y) {
         switch (state) {
             case GLUT_UP:
                 // restore defaults
-                mx_min_orig = MX_MIN;
-                mx_max_orig = MX_MAX;
-                my_min_orig = MY_MIN;
-                my_max_orig = MY_MAX;
+                master.x1 = MX_MIN;
+                master.x2 = MX_MAX;
+                master.y1 = MY_MIN;
+                master.y2 = MY_MAX;
 
                 drawBox = GL_FALSE;
                 reset();
@@ -206,8 +206,8 @@ void mouse(int button, int state, int x, int y) {
 
 void motion(int x, int y) {
     // update second corner
-    box[2] = x;
-    box[3] = y;
+    box.x2 = x;
+    box.y2 = y;
 
     // draw zoom box
     glutPostRedisplay();
