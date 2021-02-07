@@ -21,6 +21,13 @@
  */
 
 #include "mandelbrot.h"
+#include "stack.h"
+
+static GLuint px = 0, py = 0;
+static GLubyte *pixels;
+static box4d actual, master = { MX_MIN, MY_MIN, MX_MAX, MY_MAX };
+static GLboolean drawBox = GL_FALSE;
+static box4i box = { 0, 0, 0, 0 };
 
 void init(void) {
     glShadeModel(GL_FLAT);

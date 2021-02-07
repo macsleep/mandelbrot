@@ -20,46 +20,29 @@
   this software.
  */
 
-#ifndef _MANDELBROT_H_
-#define _MANDELBROT_H_
+#ifndef _STACK_H_
+#define _STACK_H_
 
 /* Includes */
 
 #include <stdio.h>
 #include <stdlib.h>
 
-#ifdef Darwin
-#include <GLUT/glut.h>
-#endif
-
-#ifdef Linux
-#include <GL/glut.h>
-#endif
-
 /* Macros */
 
-#define MX_MIN -2.2
-#define MX_MAX 0.8
-#define MY_MIN -1.25
-#define MY_MAX 1.25
+#define STACK_SIZE 8
 
 /* Type Definitions */
 
 typedef struct {
-    unsigned int x1, y1, x2, y2;
-} box4i;
+    double x1, y1, x2, y2;
+} box4d;
 
 /* Function Prototypes */
 
-void init(void);
-void display(void);
-void reset(void);
-void reshape(int w, int h);
-void pixel2mandel(int px, int py, double *mx, double *my);
-void keyboard(unsigned char key, int x, int y);
-void mouse(int button, int state, int x, int y);
-void motion(int x, int y);
-void idle(void);
+void stackReset(void);
+void stackPush(box4d *box);
+void stackPop(box4d *box);
 
 #endif
 

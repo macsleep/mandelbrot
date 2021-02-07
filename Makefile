@@ -4,7 +4,7 @@
 # --------------------------------------
 #
 
-OBJ = mandelbrot.o
+OBJ = mandelbrot.o stack.o
 CFLAGS = -O3 -Wno-deprecated-declarations
 LDFLAGS =
 
