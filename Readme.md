@@ -12,7 +12,7 @@ Clone or download the software. Make sure the required OpenGL and GLUT headers/l
 
 ## Usage
 
-You can drag the left mouse button to zoom in on details. The zoom box is also drawn using OpenGL. A single left mouse button click centers the Mandelbrot around the mouse click. The right mouse button resets the generator to its default coordinates. And the Escape key exits the application in classic GLUT style.
+You can drag the left mouse button to zoom in on details. The zoom box is also drawn using OpenGL. A single left mouse button click centers the Mandelbrot around the mouse click. The right mouse button can undo  up to eight of the last zooms/centers. The 'R' key resets the generator to its default coordinates (in case they are no longer in the undo history). And the Escape key exits the application in classic GLUT style.
 
 ## Images
 
