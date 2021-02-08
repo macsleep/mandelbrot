@@ -59,12 +59,10 @@ typedef struct {
 
 static GLuint px = 0, py = 0;
 static GLubyte *pixels;
-static box4d actual, master = {MX_MIN, MY_MIN, MX_MAX, MY_MAX};
+static box4d stack[STACK_SIZE], actual, master = {MX_MIN, MY_MIN, MX_MAX, MY_MAX};
 static GLboolean drawBox = GL_FALSE;
 static box4i box = {0, 0, 0, 0};
-static int stackTop = 0;
-static int stackBottom = 0;
-static box4d stack[STACK_SIZE];
+static int stackTop = 0, stackBottom = 0;
 
 /* Function Prototypes */
 
