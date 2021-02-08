@@ -10,7 +10,7 @@ LDFLAGS =
 
 # MacOS
 CFLAGS += -DDarwin
-LDFLAGS += -framework GLUT -framework OpenGL
+LDFLAGS += -framework OpenGL -framework GLUT
 
 # Linux
 # CFLAGS += -DLinux
