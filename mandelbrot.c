@@ -147,6 +147,7 @@ void keyboard(unsigned char key, int x, int y) {
             free(pixels);
             exit(0);
             break;
+        case 'R':
         case 'r':
             // restore defaults
             master.x1 = MX_MIN;
