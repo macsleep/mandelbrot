@@ -21,13 +21,6 @@
  */
 
 #include "mandelbrot.h"
-#include "stack.h"
-
-static GLuint px = 0, py = 0;
-static GLubyte *pixels;
-static box4d actual, master = { MX_MIN, MY_MIN, MX_MAX, MY_MAX };
-static GLboolean drawBox = GL_FALSE;
-static box4i box = { 0, 0, 0, 0 };
 
 void init(void) {
     glShadeModel(GL_FLAT);
@@ -94,7 +87,7 @@ void reset(void) {
 }
 
 void reshape(int w, int h) {
-    GLint i, size;
+    GLint size, i;
 
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
@@ -116,6 +109,32 @@ void reshape(int w, int h) {
     reset();
 }
 
+void push(box4d *box) {
+    // increment stack pointer
+    stackTop = (stackTop < STACK_SIZE - 1) ? stackTop + 1 : 0;
+
+    // save coordinates
+    memcpy(&stack[stackTop], box, sizeof (box4d));
+
+    // overflow fifo
+    if (stackBottom == stackTop) {
+        stackBottom = (stackBottom < STACK_SIZE - 1) ? stackBottom + 1 : 0;
+    }
+}
+
+int pop(box4d *box) {
+    // stack empty
+    if (stackTop == stackBottom) return -1;
+
+    // restore coordinates
+    memcpy(box, &stack[stackTop], sizeof (box4d));
+
+    // decrement stack pointer
+    stackTop = (stackTop > 0) ? stackTop - 1 : STACK_SIZE - 1;
+
+    return 0;
+}
+
 void pixel2mandel(int px, int py, double *mx, double *my) {
     // convert pixel coordinates to mandelbrot coordinates
     *mx = ((GLdouble) px / glutGet(GLUT_WINDOW_WIDTH) * (actual.x2 - actual.x1)) + actual.x1;
@@ -127,6 +146,19 @@ void keyboard(unsigned char key, int x, int y) {
         case 27:
             free(pixels);
             exit(0);
+            break;
+        case 'r':
+            // restore defaults
+            master.x1 = MX_MIN;
+            master.y1 = MY_MIN;
+            master.x2 = MX_MAX;
+            master.y2 = MY_MAX;
+
+            // reset stack
+            stackBottom = 0;
+            stackTop = 0;
+
+            reset();
             break;
         default:
             break;
@@ -155,6 +187,9 @@ void mouse(int button, int state, int x, int y) {
                 drawBox = GL_TRUE;
                 break;
             case GLUT_UP:
+                // save
+                push(&master);
+
                 if (box.x1 == box.x2 || box.y1 == box.y2) {
                     pixel2mandel(box.x1, (h - box.y1), &x_center, &y_center);
 
@@ -195,12 +230,7 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_RIGHT_BUTTON) {
         switch (state) {
             case GLUT_UP:
-                // restore defaults
-                master.x1 = MX_MIN;
-                master.y1 = MY_MIN;
-                master.x2 = MX_MAX;
-                master.y2 = MY_MAX;
-
+                if (pop(&master)) break;
                 drawBox = GL_FALSE;
                 reset();
                 break;

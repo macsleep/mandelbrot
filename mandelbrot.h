@@ -27,6 +27,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 #ifdef Darwin
 #include <GLUT/glut.h>
@@ -42,12 +43,28 @@
 #define MX_MAX 0.8
 #define MY_MIN -1.25
 #define MY_MAX 1.25
+#define STACK_SIZE 8
 
 /* Type Definitions */
 
 typedef struct {
-    unsigned int x1, y1, x2, y2;
+    GLuint x1, y1, x2, y2;
 } box4i;
+
+typedef struct {
+    GLdouble x1, y1, x2, y2;
+} box4d;
+
+/* Global Variables */
+
+static GLuint px = 0, py = 0;
+static GLubyte *pixels;
+static box4d actual, master = {MX_MIN, MY_MIN, MX_MAX, MY_MAX};
+static GLboolean drawBox = GL_FALSE;
+static box4i box = {0, 0, 0, 0};
+static int stackTop = 0;
+static int stackBottom = 0;
+static box4d stack[STACK_SIZE];
 
 /* Function Prototypes */
 
@@ -55,6 +72,8 @@ void init(void);
 void display(void);
 void reset(void);
 void reshape(int w, int h);
+void push(box4d *box);
+int pop(box4d *box);
 void pixel2mandel(int px, int py, double *mx, double *my);
 void keyboard(unsigned char key, int x, int y);
 void mouse(int button, int state, int x, int y);
