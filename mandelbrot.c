@@ -111,14 +111,14 @@ void reshape(int w, int h) {
 
 void push(box4d *box) {
     // increment stack pointer
-    stackTop = (stackTop < STACK_SIZE - 1) ? stackTop + 1 : 0;
+    stackTop = (stackTop + 1 < STACK_SIZE) ? stackTop + 1 : 0;
 
     // save coordinates
     memcpy(&stack[stackTop], box, sizeof (box4d));
 
     // overflow fifo
     if (stackBottom == stackTop) {
-        stackBottom = (stackBottom < STACK_SIZE - 1) ? stackBottom + 1 : 0;
+        stackBottom = (stackBottom + 1 < STACK_SIZE) ? stackBottom + 1 : 0;
     }
 }
 
