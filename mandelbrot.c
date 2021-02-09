@@ -27,26 +27,33 @@ void init(void) {
 }
 
 void display(void) {
-    GLint w, h;
+    GLint width, height;
 
     // window size
-    w = glutGet(GLUT_WINDOW_WIDTH);
-    h = glutGet(GLUT_WINDOW_HEIGHT);
-
-    glClear(GL_COLOR_BUFFER_BIT);
-
-    // draw mandelbrot
-    glRasterPos2i(0, 0);
-    glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+    width = glutGet(GLUT_WINDOW_WIDTH);
+    height = glutGet(GLUT_WINDOW_HEIGHT);
 
     // draw zoom box
     if (drawBox) {
+        // skip_pixels = box[1].x1;
+        // skip_rows = height - box[1].y2;
+        // sub_width = box[1].x2 - box[1].x1 + 1;
+        // sub_height = box[1].y2 - box[1].y1 + 1;
+        // glRasterPos2i(skip_pixels, skip_rows);
+        // glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
+        // glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
+        // glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
+        // glDrawPixels(sub_width, sub_height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        // glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+        // glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+        // glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
+
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        glVertex2i(box.x1, (h - box.y1));
-        glVertex2i(box.x2, (h - box.y1));
-        glVertex2i(box.x2, (h - box.y2));
-        glVertex2i(box.x1, (h - box.y2));
+        glVertex2i(box.x1, (height - box.y1));
+        glVertex2i(box.x2, (height - box.y1));
+        glVertex2i(box.x2, (height - box.y2));
+        glVertex2i(box.x1, (height - box.y2));
         glEnd();
     }
 
@@ -82,6 +89,9 @@ void reset(void) {
     px = 0;
     py = 0;
 
+    // clear screen
+    glClear(GL_COLOR_BUFFER_BIT);
+
     // start calculations
     glutIdleFunc(idle);
 }
@@ -94,17 +104,6 @@ void reshape(int w, int h) {
     glLoadIdentity();
     glOrtho(0.0, w, 0.0, h, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
-
-    // allocate buffer
-    size = w * h * 4 * sizeof (GLubyte);
-    pixels = realloc(pixels, size);
-    if (pixels == NULL) {
-        fprintf(stderr, "realloc failed\n");
-        exit(1);
-    }
-
-    // zero buffer
-    for (i = 0; i < size; i++) pixels[i] = 0;
 
     reset();
 }
@@ -149,6 +148,7 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         case 'R':
         case 'r':
+            // check if reset needed
             if (master.x1 == MX_MIN && master.y1 == MY_MIN &&
                     master.x2 == MX_MAX && master.y2 == MY_MAX) break;
 
@@ -256,14 +256,15 @@ void motion(int x, int y) {
 }
 
 void idle(void) {
+    GLbyte rgba[4] = {0, 0, 0, 0xff};
     GLuint i = 0, imax = 0xfff, p;
     GLdouble x = 0.0, y = 0.0, mx, my, xtmp;
 
     pixel2mandel(px, py, &mx, &my);
 
     // iterate mandelbrot function
-    while ((x*x + y*y <= 2*2) && (i < imax)) {
-        xtmp = x*x - y*y + mx;
+    while ((x * x + y * y <= 2 * 2) && (i < imax)) {
+        xtmp = x * x - y * y + mx;
         y = 2 * x * y + my;
         x = xtmp;
         i++;
@@ -272,13 +273,14 @@ void idle(void) {
     // imax equals black
     if (i >= imax) i = 0;
 
-    // pixel pointer
-    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof (GLubyte);
-
     // pixel color
-    pixels[p + 0] = (i & 0x00f) << 4; // red
-    pixels[p + 1] = (i & 0x0f0);      // green
-    pixels[p + 2] = (i & 0xf00) >> 4; // blue
+    rgba[0] = (i & 0x00f) << 4; // red
+    rgba[1] = (i & 0x0f0);      // green
+    rgba[2] = (i & 0xf00) >> 4; // blue
+
+    // draw pixel
+    glRasterPos2i(px, py);
+    glDrawPixels(1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &rgba);
 
     // next pixel
     if (++px >= glutGet(GLUT_WINDOW_WIDTH)) {
