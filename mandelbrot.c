@@ -149,8 +149,8 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         case 'R':
         case 'r':
-            if (master.x1 != MX_MIN || master.y1 != MY_MIN ||
-                    master.x2 != MX_MAX || master.y2 != MY_MAX) break;
+            if (master.x1 == MX_MIN && master.y1 == MY_MIN &&
+                    master.x2 == MX_MAX && master.y2 == MY_MAX) break;
 
             // reset stack
             stackBottom = 0;
