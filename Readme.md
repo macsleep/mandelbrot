@@ -16,14 +16,20 @@ You can drag the left mouse button to zoom in on details. The zoom box is also d
 
 Please note: Once the pixels start getting bigger you have reached the resolution limit of the double precision floating point numbers. There's nothing much you can do about that right now except zoom out.
 
-## Images
+## Screen Shots
 
-<img src="images/Mandelbrot2.jpeg" width="640" />
-<img src="images/Mandelbrot3.jpeg" width="640" />
-<img src="images/Mandelbrot4.jpeg" width="640" />
-<img src="images/Mandelbrot5.jpeg" width="640" />
-<img src="images/Mandelbrot6.jpeg" width="640" />
-<img src="images/Mandelbrot7.jpeg" width="640" />
-<img src="images/Mandelbrot8.jpeg" width="640" />
+<table>
+  <tr>
+    <td><img src="images/Mandelbrot2.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot3.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot4.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot5.jpeg" width="160" /></td>
+  </tr> 
+  <tr>
+    <td><img src="images/Mandelbrot6.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot7.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot8.jpeg" width="160" /></td>
+  </tr>
+</table>
 
 Date: 2021-01-19
