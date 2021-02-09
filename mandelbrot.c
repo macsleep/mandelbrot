@@ -149,17 +149,20 @@ void keyboard(unsigned char key, int x, int y) {
             break;
         case 'R':
         case 'r':
-            // restore defaults
-            master.x1 = MX_MIN;
-            master.y1 = MY_MIN;
-            master.x2 = MX_MAX;
-            master.y2 = MY_MAX;
+            if (master.x1 != MX_MIN || master.y1 != MY_MIN ||
+                    master.x2 != MX_MAX || master.y2 != MY_MAX) {
+                // reset stack
+                stackBottom = 0;
+                stackTop = 0;
 
-            // reset stack
-            stackBottom = 0;
-            stackTop = 0;
+                // restore defaults
+                master.x1 = MX_MIN;
+                master.y1 = MY_MIN;
+                master.x2 = MX_MAX;
+                master.y2 = MY_MAX;
 
-            reset();
+                reset();
+            }
             break;
         default:
             break;
