@@ -29,6 +29,7 @@ Please note: Once the pixels start getting bigger you have reached the resolutio
     <td><img src="images/Mandelbrot6.jpeg" width="160" /></td>
     <td><img src="images/Mandelbrot7.jpeg" width="160" /></td>
     <td><img src="images/Mandelbrot8.jpeg" width="160" /></td>
+    <td><img src="images/Mandelbrot9.jpeg" width="160" /></td>
   </tr>
 </table>
 
