@@ -33,16 +33,18 @@ void display(void) {
     w = glutGet(GLUT_WINDOW_WIDTH);
     h = glutGet(GLUT_WINDOW_HEIGHT);
 
-    // draw zoom box
     if (drawBox) {
-        sortbox(&box[0], &box[1]);
+        // draw mandelbrot
+        glRasterPos2i(0, 0);
+        glDrawPixels(w, h, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 
+        // draw zoom box
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        glVertex2i(box[1].x1, box[1].y1);
-        glVertex2i(box[1].x2, box[1].y1);
-        glVertex2i(box[1].x2, box[1].y2);
-        glVertex2i(box[1].x1, box[1].y2);
+        glVertex2i(box.x1, box.y1);
+        glVertex2i(box.x2, box.y1);
+        glVertex2i(box.x2, box.y2);
+        glVertex2i(box.x1, box.y2);
         glEnd();
     }
 
@@ -86,11 +88,24 @@ void reset(void) {
 }
 
 void reshape(int w, int h) {
+    GLint size, i;
+
     glViewport(0, 0, (GLsizei) w, (GLsizei) h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0, w, 0.0, h, -1.0, 1.0);
     glMatrixMode(GL_MODELVIEW);
+
+    // allocate buffer
+    size = w * h * 4 * sizeof (GLubyte);
+    pixels = realloc(pixels, size);
+    if (pixels == NULL) {
+        fprintf(stderr, "realloc failed\n");
+        exit(1);
+    }
+
+    // zero buffer
+    for (i = 0; i < size; i++) pixels[i] = 0;
 
     reset();
 }
@@ -121,26 +136,6 @@ int pop(box4d *box) {
     return 0;
 }
 
-void sortbox(box4i *box0, box4i *box1) {
-    // x coordinates
-    if (box0->x1 > box0->x2) {
-        box1->x1 = box0->x2;
-        box1->x2 = box0->x1;
-    } else {
-        box1->x1 = box0->x1;
-        box1->x2 = box0->x2;
-    }
-
-    // y coordinates
-    if (box0->y1 > box0->y2) {
-        box1->y1 = box0->y2;
-        box1->y2 = box0->y1;
-    } else {
-        box1->y1 = box0->y1;
-        box1->y2 = box0->y2;
-    }
-}
-
 void pixel2mandel(int px, int py, double *mx, double *my) {
     // convert pixel coordinates to mandelbrot coordinates
     *mx = ((GLdouble) px / glutGet(GLUT_WINDOW_WIDTH) * (actual.x2 - actual.x1)) + actual.x1;
@@ -150,11 +145,11 @@ void pixel2mandel(int px, int py, double *mx, double *my) {
 void keyboard(unsigned char key, int x, int y) {
     switch (key) {
         case 27:
+            free(pixels);
             exit(0);
             break;
         case 'R':
         case 'r':
-            // check if reset needed
             if (master.x1 == MX_MIN && master.y1 == MY_MIN &&
                     master.x2 == MX_MAX && master.y2 == MY_MAX) break;
 
@@ -176,7 +171,7 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-    GLint w, h;
+    GLint w, h, tmp;
     GLdouble x_center, y_center, x_half, y_half;
 
     // window size
@@ -186,11 +181,13 @@ void mouse(int button, int state, int x, int y) {
     if (button == GLUT_LEFT_BUTTON) {
         switch (state) {
             case GLUT_DOWN:
-                // two corners
-                box[0].x1 = x;
-                box[0].y1 = h - y;
-                box[0].x2 = x;
-                box[0].y2 = h - y;
+                // first corner
+                box.x1 = x;
+                box.y1 = h - y;
+
+                // second corner
+                box.x2 = x;
+                box.y2 = h - y;
 
                 drawBox = GL_TRUE;
                 break;
@@ -198,8 +195,8 @@ void mouse(int button, int state, int x, int y) {
                 // save
                 push(&master);
 
-                if (box[0].x1 == box[0].x2 || box[0].y1 == box[0].y2) {
-                    pixel2mandel(box[0].x1, box[0].y1, &x_center, &y_center);
+                if (box.x1 == box.x2 || box.y1 == box.y2) {
+                    pixel2mandel(box.x1, box.y1, &x_center, &y_center);
 
                     x_half = (actual.x2 - actual.x1) / 2.0;
                     y_half = (actual.y2 - actual.y1) / 2.0;
@@ -210,11 +207,21 @@ void mouse(int button, int state, int x, int y) {
                     master.x2 = x_center + x_half;
                     master.y2 = y_center + y_half;
                 } else {
-                    sortbox(&box[0], &box[1]);
+                    // swap if necessary
+                    if (box.x1 > box.x2) {
+                        tmp = box.x1;
+                        box.x1 = box.x2;
+                        box.x2 = tmp;
+                    }
+                    if (box.y1 > box.y2) {
+                        tmp = box.y1;
+                        box.y1 = box.y2;
+                        box.y2 = tmp;
+                    }
 
                     // zoom in on box
-                    pixel2mandel(box[1].x1, box[1].y1, &master.x1, &master.y1);
-                    pixel2mandel(box[1].x2, box[1].y2, &master.x2, &master.y2);
+                    pixel2mandel(box.x1, box.y1, &master.x1, &master.y1);
+                    pixel2mandel(box.x2, box.y2, &master.x2, &master.y2);
                 }
 
                 drawBox = GL_FALSE;
@@ -241,42 +248,42 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void motion(int x, int y) {
-    // second corner
-    box[0].x2 = x;
-    box[0].y2 = glutGet(GLUT_WINDOW_HEIGHT) - y;
+    // update second corner
+    box.x2 = x;
+    box.y2 = glutGet(GLUT_WINDOW_HEIGHT) - y;
 
     // draw zoom box
     glutPostRedisplay();
 }
 
 void idle(void) {
-    GLuint i = 0, imax = 0xfff;
-    GLubyte r, g, b;
-    GLdouble x = 0.0, y = 0.0, mx, my, tmp;
+    GLuint i = 0, imax = 0xfff, p;
+    GLdouble x = 0.0, y = 0.0, mx, my, xtmp;
 
     pixel2mandel(px, py, &mx, &my);
 
     // iterate mandelbrot function
-    while ((x * x + y * y <= 2 * 2) && (i < imax)) {
-        tmp = x * x - y * y + mx;
+    while ((x*x + y*y <= 2*2) && (i < imax)) {
+        xtmp = x*x - y*y + mx;
         y = 2 * x * y + my;
-        x = tmp;
+        x = xtmp;
         i++;
     }
 
     // imax equals black
     if (i >= imax) i = 0;
 
+    // pixel pointer
+    p = (py * glutGet(GLUT_WINDOW_WIDTH) + px) * 4 * sizeof (GLubyte);
+
     // pixel color
-    r = (i & 0x00f) << 4; // red
-    g = (i & 0x0f0);      // green
-    b = (i & 0xf00) >> 4; // blue
+    pixels[p + 0] = (i & 0x00f) << 4; // red
+    pixels[p + 1] = (i & 0x0f0);      // green
+    pixels[p + 2] = (i & 0xf00) >> 4; // blue
 
     // draw pixel
-    glColor3ub(r, g, b);
-    glBegin(GL_POINTS);
-    glVertex2i(px, py);
-    glEnd();
+    glRasterPos2i(px, py);
+    glDrawPixels(1, 1, GL_RGBA, GL_UNSIGNED_BYTE, &pixels[p]);
 
     // next pixel
     if (++px >= glutGet(GLUT_WINDOW_WIDTH)) {
