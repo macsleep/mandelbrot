@@ -5,7 +5,7 @@
 #
 
 OBJ = mandelbrot.o
-CFLAGS = -O3 -Wno-deprecated-declarations
+CFLAGS = -O3 -Wunused-variable -Wno-deprecated-declarations
 LDFLAGS =
 
 # MacOS
