@@ -57,11 +57,11 @@ typedef struct {
 
 /* Global Variables */
 
-static GLuint px = 0, py = 0;
 static GLubyte *pixels;
+static GLuint width = 0, height = 0, px = 0, py = 0;
 static box4d stack[STACK_SIZE], actual, master = {MX_MIN, MY_MIN, MX_MAX, MY_MAX};
 static GLboolean drawBox = GL_FALSE;
-static box4i box = {0, 0, 0, 0};
+static box4i box = {0, 0, 0, 0},  sorted = {0, 0, 0, 0};
 static int stackTop = 0, stackBottom = 0;
 
 /* Function Prototypes */
@@ -72,6 +72,7 @@ void reset(void);
 void reshape(int w, int h);
 void push(box4d *box);
 int pop(box4d *box);
+void sortbox(box4i *box1, box4i *box2);
 void pixel2mandel(int px, int py, double *mx, double *my);
 void keyboard(unsigned char key, int x, int y);
 void mouse(int button, int state, int x, int y);
