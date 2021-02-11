@@ -254,7 +254,7 @@ void mouse(int button, int state, int x, int y) {
                 } else {
                     window2pixel(&box1, &box2);
 
-                    // zoom in on box1
+                    // zoom in on box
                     pixel2mandel(box2.x1, box2.y1, &master.x1, &master.y1);
                     pixel2mandel(box2.x2, box2.y2, &master.x2, &master.y2);
                 }
