@@ -260,7 +260,6 @@ void mouse(int button, int state, int x, int y) {
                 }
 
                 drawBox = GL_FALSE;
-
                 reset();
                 break;
             default:
@@ -279,8 +278,6 @@ void mouse(int button, int state, int x, int y) {
                 break;
         }
     }
-
-    glutPostRedisplay();
 }
 
 void motion(int x, int y) {
@@ -326,6 +323,7 @@ void idle(void) {
         glPixelStorei(GL_UNPACK_SKIP_ROWS, py);
         glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+        glutPostRedisplay();
 
         if (++py >= height) {
             py = 0;
@@ -333,9 +331,6 @@ void idle(void) {
             // stop calculations
             glutIdleFunc(NULL);
         }
-
-        // new mandelbrot line
-        glutPostRedisplay();
     }
 }
 
