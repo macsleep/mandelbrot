@@ -29,7 +29,7 @@ void init(void) {
 void display(void) {
     int width_sub, height_sub, skip_pixels, skip_rows;
 
-    if (drawBox) {
+    if (clearBox) {
         skip_rows = box2.y1;
         skip_pixels = box2.x1 - 1;
         width_sub = box2.x2 - box2.x1 + 1;
@@ -45,9 +45,13 @@ void display(void) {
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
 
+        clearBox = GL_FALSE;
+    }
+
+    if (drawBox) {
         window2pixel(&box1, &box2);
 
-        // draw new zoom
+        // draw zoom box
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
         glVertex2i(box2.x1, box2.y1);
@@ -55,6 +59,8 @@ void display(void) {
         glVertex2i(box2.x2, box2.y2);
         glVertex2i(box2.x1, box2.y2);
         glEnd();
+
+        clearBox = GL_TRUE;
     }
 
     glFlush();
@@ -84,9 +90,6 @@ void reset(void) {
     px = 0;
     py = 0;
 
-    // clear screen
-    glClear(GL_COLOR_BUFFER_BIT);
-
     // start calculations
     glutIdleFunc(idle);
 }
@@ -114,6 +117,9 @@ void reshape(int w, int h) {
 
     // zero buffer
     for (i = 0; i < size; i++) pixels[i] = 0;
+
+    // clear screen
+    glClear(GL_COLOR_BUFFER_BIT);
 
     reset();
 }
@@ -145,49 +151,37 @@ int pop(box4d *box1) {
 }
 
 void window2pixel(box4i *box1, box4i *box2) {
-    int x1, y1, x2, y2, tmp;
+    int tmp;
 
-    // local copy
-    x1 = box1->x1;
-    y1 = box1->y1;
-    x2 = box1->x2;
-    y2 = box1->y2;
+    memcpy(box2, box1, sizeof (box4i));
 
     // boundary check
-    if (x1 < 0) x1 = 0;
-    if (x1 > width) x1 = width;
-    if (y1 < 0) y1 = 1;
-    if (y1 > height) y1 = height;
+    if (box2->x1 < 0) box2->x1 = 0;
+    if (box2->x1 > width) box2->x1 = width;
+    if (box2->y1 < 0) box2->y1 = 1;
+    if (box2->y1 > height) box2->y1 = height;
 
-    // boundary check
-    if (x2 < 0) x2 = 1;
-    if (x2 > width) x2 = width;
-    if (y2 < 0) y2 = 1;
-    if (y2 > height) y2 = height;
+    if (box2->x2 < 0) box2->x2 = 1;
+    if (box2->x2 > width) box2->x2 = width;
+    if (box2->y2 < 0) box2->y2 = 1;
+    if (box2->y2 > height) box2->y2 = height;
 
-    // window too gl coordinates
-    y1 = height - y1;
-    y2 = height - y2;
+    // convert window coordinates to pixel coordinates
+    box2->y1 = height - box2->y1;
+    box2->y2 = height - box2->y2;
 
-    // x1 lower left
-    if (x1 > x2) {
-        tmp = x1;
-        x1 = x2;
-        x2 = tmp;
+    // swap if nessesary
+    if (box2->x1 > box2->x2) {
+        tmp = box2->x1;
+        box2->x1 = box2->x2;
+        box2->x2 = tmp;
     }
 
-    // y1 lower left
-    if (y1 > y2) {
-        tmp = y1;
-        y1 = y2;
-        y2 = tmp;
+    if (box2->y1 > box2->y2) {
+        tmp = box2->y1;
+        box2->y1 = box2->y2;
+        box2->y2 = tmp;
     }
-
-    // save
-    box2->x1 = x1;
-    box2->y1 = y1;
-    box2->x2 = x2;
-    box2->y2 = y2;
 }
 
 void pixel2mandel(int px, int py, double *mx, double *my) {
@@ -237,15 +231,14 @@ void mouse(int button, int state, int x, int y) {
                 // first corner
                 box1.x2 = x;
                 box1.y2 = y;
-
-                drawBox = GL_TRUE;
                 break;
             case GLUT_UP:
                 // save
                 push(&master);
 
                 if (box1.x1 == box1.x2 || box1.y1 == box1.y2) {
-                    pixel2mandel(box1.x1, box1.y1, &x_center, &y_center);
+                    window2pixel(&box1, &box2);
+                    pixel2mandel(box2.x1, box2.y1, &x_center, &y_center);
 
                     x_half = (actual.x2 - actual.x1) / 2.0;
                     y_half = (actual.y2 - actual.y1) / 2.0;
@@ -264,6 +257,7 @@ void mouse(int button, int state, int x, int y) {
                 }
 
                 drawBox = GL_FALSE;
+
                 reset();
                 break;
             default:
@@ -290,6 +284,8 @@ void motion(int x, int y) {
     // update second corner
     box1.x2 = x;
     box1.y2 = y;
+
+    drawBox = GL_TRUE;
 
     // draw zoom box1
     glutPostRedisplay();
