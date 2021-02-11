@@ -42,8 +42,8 @@ void display(void) {
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, skip_pixels);
         glDrawPixels(width_sub, height_sub, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-        glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+        glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
 
         clearBox = GL_FALSE;
     }
@@ -318,7 +318,7 @@ void idle(void) {
     if (++px >= width) {
         px = 0;
 
-        // draw line
+        // draw new line
         glRasterPos2i(0, py);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, py);
         glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
