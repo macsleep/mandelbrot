@@ -153,6 +153,7 @@ int pop(box4d *box1) {
 void window2pixel(box4i *box1, box4i *box2) {
     int tmp;
 
+    // copy box
     memcpy(box2, box1, sizeof (box4i));
 
     // boundary check
@@ -228,9 +229,11 @@ void mouse(int button, int state, int x, int y) {
                 box1.x1 = x;
                 box1.y1 = y;
 
-                // first corner
+                // second corner
                 box1.x2 = x;
                 box1.y2 = y;
+
+                drawBox = GL_TRUE;
                 break;
             case GLUT_UP:
                 // save
@@ -281,13 +284,11 @@ void mouse(int button, int state, int x, int y) {
 }
 
 void motion(int x, int y) {
-    // update second corner
+    // second corner
     box1.x2 = x;
     box1.y2 = y;
 
-    drawBox = GL_TRUE;
-
-    // draw zoom box1
+    // draw zoom box
     glutPostRedisplay();
 }
 
