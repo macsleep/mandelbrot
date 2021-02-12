@@ -27,7 +27,7 @@ void init(void) {
 }
 
 void display(void) {
-    int width_sub, height_sub, skip_pixels, skip_rows;
+    GLint width_sub, height_sub, skip_pixels, skip_rows;
 
     if (clearScreen) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -49,7 +49,7 @@ void display(void) {
 
     if (clearBox) {
         skip_rows = box2.y1;
-        skip_pixels = box2.x1 - 1;
+        skip_pixels = box2.x1;
         width_sub = box2.x2 - box2.x1 + 1;
         height_sub = box2.y2 - box2.y1 + 1;
 
@@ -72,10 +72,10 @@ void display(void) {
         // draw zoom box
         glColor3f(1.0, 1.0, 1.0);
         glBegin(GL_LINE_LOOP);
-        glVertex2i(box2.x1, box2.y1);
-        glVertex2i(box2.x2, box2.y1);
-        glVertex2i(box2.x2, box2.y2);
-        glVertex2i(box2.x1, box2.y2);
+        glVertex2i(box2.x1 + 1, box2.y1);
+        glVertex2i(box2.x2 + 1, box2.y1);
+        glVertex2i(box2.x2 + 1, box2.y2);
+        glVertex2i(box2.x1 + 1, box2.y2);
         glEnd();
 
         clearBox = GL_TRUE;
@@ -168,25 +168,25 @@ int pop(box4d *box1) {
 }
 
 void window2pixel(box4i *box1, box4i *box2) {
-    int tmp;
+    GLint tmp;
 
     // copy box
     memcpy(box2, box1, sizeof (box4i));
 
     // boundary check
     if (box2->x1 < 0) box2->x1 = 0;
-    if (box2->x1 > width) box2->x1 = width;
-    if (box2->y1 < 0) box2->y1 = 1;
-    if (box2->y1 > height) box2->y1 = height;
+    if (box2->x1 >= width) box2->x1 = width - 1;
+    if (box2->y1 < 0) box2->y1 = 0;
+    if (box2->y1 >= height) box2->y1 = height - 1;
 
-    if (box2->x2 < 0) box2->x2 = 1;
-    if (box2->x2 > width) box2->x2 = width;
-    if (box2->y2 < 0) box2->y2 = 1;
-    if (box2->y2 > height) box2->y2 = height;
+    if (box2->x2 < 0) box2->x2 = 0;
+    if (box2->x2 >= width) box2->x2 = width - 1;
+    if (box2->y2 < 0) box2->y2 = 0;
+    if (box2->y2 >= height) box2->y2 = height - 1;
 
     // convert window coordinates to pixel coordinates
-    box2->y1 = height - box2->y1;
-    box2->y2 = height - box2->y2;
+    box2->y1 = height - 1 - box2->y1;
+    box2->y2 = height - 1 - box2->y2;
 
     // swap if necessary
     if (box2->x1 > box2->x2) {
@@ -350,7 +350,7 @@ void idle(void) {
 
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
-    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGB);
+    glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(640, 480);
     glutCreateWindow(argv[0]);
