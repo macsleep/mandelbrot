@@ -33,21 +33,16 @@ void display(void) {
         glClear(GL_COLOR_BUFFER_BIT);
 
         clearScreen = GL_FALSE;
-        clearBox = GL_FALSE;
     }
 
     if (glutLayerGet(GLUT_NORMAL_DAMAGED)) {
         // draw whole screen
         glRasterPos2i(0, 0);
         glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-
-        clearBox = GL_FALSE;
     } else {
-        skip_rows = py - 1;
-
         // draw single line
-        glRasterPos2i(0, skip_rows);
-        glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
+        glRasterPos2i(0, lineNumber);
+        glPixelStorei(GL_UNPACK_SKIP_ROWS, lineNumber);
         glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
     }
@@ -340,15 +335,16 @@ void idle(void) {
     if (++px >= width) {
         px = 0;
 
+        // draw new line
+        lineNumber = py;
+        glutPostRedisplay();
+
         if (++py >= height) {
             py = 0;
 
             // stop calculations
             glutIdleFunc(NULL);
         }
-
-        // draw new line
-        glutPostRedisplay();
     }
 }
 
