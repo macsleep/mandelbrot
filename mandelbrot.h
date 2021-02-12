@@ -60,7 +60,7 @@ typedef struct {
 static GLubyte *pixels;
 static GLuint width = 0, height = 0, px = 0, py = 0;
 static box4d stack[STACK_SIZE], actual, master = {MX_MIN, MY_MIN, MX_MAX, MY_MAX};
-static GLboolean drawBox = GL_FALSE, clearBox = GL_FALSE;
+static GLboolean clearScreen = GL_FALSE, drawBox = GL_FALSE, clearBox = GL_FALSE;
 static box4i box1 = {0, 0, 0, 0}, box2 = {0, 0, 0, 0};
 static int stackTop = 0, stackBottom = 0;
 

@@ -29,6 +29,29 @@ void init(void) {
 void display(void) {
     int width_sub, height_sub, skip_pixels, skip_rows;
 
+    if (clearScreen) {
+        glClear(GL_COLOR_BUFFER_BIT);
+
+        clearScreen = GL_FALSE;
+        clearBox = GL_FALSE;
+    }
+
+    if (glutLayerGet(GLUT_NORMAL_DAMAGED)) {
+        // draw whole screen
+        glRasterPos2i(0, 0);
+        glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+
+        clearBox = GL_FALSE;
+    } else {
+        skip_rows = py - 1;
+
+        // draw single line
+        glRasterPos2i(0, skip_rows);
+        glPixelStorei(GL_UNPACK_SKIP_ROWS, skip_rows);
+        glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+    }
+
     if (clearBox) {
         skip_rows = box2.y1;
         skip_pixels = box2.x1 - 1;
@@ -118,8 +141,7 @@ void reshape(int w, int h) {
     // zero buffer
     for (i = 0; i < size; i++) pixels[i] = 0;
 
-    // clear screen
-    glClear(GL_COLOR_BUFFER_BIT);
+    clearScreen = GL_TRUE;
 
     reset();
 }
@@ -171,7 +193,7 @@ void window2pixel(box4i *box1, box4i *box2) {
     box2->y1 = height - box2->y1;
     box2->y2 = height - box2->y2;
 
-    // swap if nessesary
+    // swap if necessary
     if (box2->x1 > box2->x2) {
         tmp = box2->x1;
         box2->x1 = box2->x2;
@@ -318,19 +340,15 @@ void idle(void) {
     if (++px >= width) {
         px = 0;
 
-        // draw new line
-        glRasterPos2i(0, py);
-        glPixelStorei(GL_UNPACK_SKIP_ROWS, py);
-        glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
-        glutPostRedisplay();
-
         if (++py >= height) {
             py = 0;
 
             // stop calculations
             glutIdleFunc(NULL);
         }
+
+        // draw new line
+        glutPostRedisplay();
     }
 }
 
