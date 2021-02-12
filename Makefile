@@ -5,16 +5,18 @@
 #
 
 OBJ = mandelbrot.o
-CFLAGS = -O3 -Wno-deprecated-declarations
-LDFLAGS =
 
 # MacOS
-CFLAGS += -DDarwin
-LDFLAGS += -framework OpenGL -framework GLUT
+CFLAGS = -O3 -Wno-deprecated-declarations -DDarwin
+LDFLAGS = -framework OpenGL -framework GLUT
 
 # Linux
-# CFLAGS += -DLinux
-# LDFLAGS += -lGL -lGLU -lglut
+# CFLAGS = -O3
+# LDFLAGS = -lGL -lGLU -lglut
+
+# HP-UX
+# CFLAGS = -O4
+# LDFLAGS = -lXmu -lX11 -lGL -lGLU -lglut
 
 mandelbrot:	$(OBJ)
 	$(CC) -o $@ $(OBJ) $(LDFLAGS)

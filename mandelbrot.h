@@ -31,9 +31,7 @@
 
 #ifdef Darwin
 #include <GLUT/glut.h>
-#endif
-
-#ifdef Linux
+#else
 #include <GL/glut.h>
 #endif
 
