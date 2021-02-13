@@ -288,7 +288,6 @@ void mouse(int button, int state, int x, int y) {
         switch (state) {
             case GLUT_UP:
                 if (pop(&master)) break;
-                drawBox = GL_FALSE;
                 reset();
                 break;
             default:
