@@ -27,7 +27,7 @@ void init(void) {
 }
 
 void display(void) {
-    GLint width_sub, height_sub, skip_pixels, skip_rows;
+    int width_sub, height_sub, skip_pixels, skip_rows;
 
     if (clearScreen) {
         glClear(GL_COLOR_BUFFER_BIT);
@@ -85,13 +85,13 @@ void display(void) {
 }
 
 void reset(void) {
-    GLdouble w_ratio, m_ratio, mpp;
+    double w_ratio, m_ratio, mpp;
 
     // respect aspect ratio
-    w_ratio = (GLdouble) width / (GLdouble) height;
+    w_ratio = (double) width / (double) height;
     m_ratio = (master.x2 - master.x1) / (master.y2 - master.y1);
     if (w_ratio > m_ratio) {
-        mpp = (master.y2 - master.y1) / (GLdouble) height * (GLdouble) width;
+        mpp = (master.y2 - master.y1) / (double) height * (double) width;
         actual.x1 = master.x1 + (master.x2 - master.x1 - mpp) / 2.0;
         actual.x2 = master.x1 + (master.x2 - master.x1 + mpp) / 2.0;
         actual.y2 = master.y2;
@@ -99,7 +99,7 @@ void reset(void) {
     } else {
         actual.x2 = master.x2;
         actual.x1 = master.x1;
-        mpp = (master.x2 - master.x1) / (GLdouble) width * (GLdouble) height;
+        mpp = (master.x2 - master.x1) / (double) width * (double) height;
         actual.y1 = master.y1 + (master.y2 - master.y1 - mpp) / 2.0;
         actual.y2 = master.y1 + (master.y2 - master.y1 + mpp) / 2.0;
     }
@@ -113,7 +113,7 @@ void reset(void) {
 }
 
 void reshape(int w, int h) {
-    GLint size, i;
+    int size, i;
 
     // save for global use
     width = w;
@@ -168,7 +168,7 @@ int pop(box4d *box1) {
 }
 
 void window2pixel(box4i *box1, box4i *box2) {
-    GLint tmp;
+    int tmp;
 
     // copy box
     memcpy(box2, box1, sizeof (box4i));
@@ -204,8 +204,8 @@ void window2pixel(box4i *box1, box4i *box2) {
 
 void pixel2mandel(int px, int py, double *mx, double *my) {
     // convert pixel coordinates to mandelbrot coordinates
-    *mx = ((GLdouble) px / width * (actual.x2 - actual.x1)) + actual.x1;
-    *my = ((GLdouble) py / height * (actual.y2 - actual.y1)) + actual.y1;
+    *mx = (((double) px + 0.5) / width * (actual.x2 - actual.x1)) + actual.x1;
+    *my = (((double) py + 0.5) / height * (actual.y2 - actual.y1)) + actual.y1;
 }
 
 void keyboard(unsigned char key, int x, int y) {
@@ -237,7 +237,7 @@ void keyboard(unsigned char key, int x, int y) {
 }
 
 void mouse(int button, int state, int x, int y) {
-    GLdouble x_center, y_center, x_half, y_half;
+    double x_center, y_center, x_half, y_half;
 
     if (button == GLUT_LEFT_BUTTON) {
         switch (state) {
@@ -307,8 +307,8 @@ void motion(int x, int y) {
 }
 
 void idle(void) {
-    GLuint i = 0, imax = 0xfff, p;
-    GLdouble x = 0.0, y = 0.0, mx, my, tmp;
+    unsigned int i = 0, imax = 0xfff, p;
+    double x = 0.0, y = 0.0, mx, my, tmp;
 
     pixel2mandel(px, py, &mx, &my);
 
