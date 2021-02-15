@@ -31,7 +31,6 @@ void display(void) {
 
     if (clearScreen) {
         glClear(GL_COLOR_BUFFER_BIT);
-
         clearScreen = GL_FALSE;
     }
 
@@ -67,7 +66,9 @@ void display(void) {
     }
 
     if (drawBox) {
+        // prepare clear box
         window2pixel(&box1, &box2);
+        clearBox = GL_TRUE;
 
         // draw zoom box
         glColor3f(1.0, 1.0, 1.0);
@@ -77,8 +78,6 @@ void display(void) {
         glVertex2i(box2.x2 + 1, box2.y2);
         glVertex2i(box2.x1 + 1, box2.y2);
         glEnd();
-
-        clearBox = GL_TRUE;
     }
 
     glFlush();
@@ -256,10 +255,11 @@ void mouse(int button, int state, int x, int y) {
                 // save
                 push(&master);
 
-                if (box1.x1 == box1.x2 || box1.y1 == box1.y2) {
-                    window2pixel(&box1, &box2);
-                    pixel2mandel(box2.x1, box2.y1, &x_center, &y_center);
+                // convert coordinates
+                window2pixel(&box1, &box2);
 
+                if (box1.x1 == box1.x2 || box1.y1 == box1.y2) {
+                    pixel2mandel(box2.x1, box2.y1, &x_center, &y_center);
                     x_half = (actual.x2 - actual.x1) / 2.0;
                     y_half = (actual.y2 - actual.y1) / 2.0;
 
@@ -269,8 +269,6 @@ void mouse(int button, int state, int x, int y) {
                     master.x2 = x_center + x_half;
                     master.y2 = y_center + y_half;
                 } else {
-                    window2pixel(&box1, &box2);
-
                     // zoom in on box
                     pixel2mandel(box2.x1, box2.y1, &master.x1, &master.y1);
                     pixel2mandel(box2.x2, box2.y2, &master.x2, &master.y2);
