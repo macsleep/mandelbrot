@@ -349,6 +349,7 @@ void idle(void) {
 int main(int argc, char** argv) {
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
+    if(!glutGet(GLUT_DISPLAY_MODE_POSSIBLE)) return(1);
     glutInitWindowPosition(100, 100);
     glutInitWindowSize(640, 480);
     glutCreateWindow(argv[0]);
@@ -359,6 +360,6 @@ int main(int argc, char** argv) {
     glutMotionFunc(motion);
     glutMouseFunc(mouse);
     glutMainLoop();
-    return 0;
+    return(0);
 }
 
