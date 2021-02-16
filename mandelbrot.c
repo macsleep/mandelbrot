@@ -237,6 +237,7 @@ void keyboard(unsigned char key, int x, int y) {
 
 void mouse(int button, int state, int x, int y) {
     double x_center, y_center, x_half, y_half;
+    box4i bounds;
 
     if (button == GLUT_LEFT_BUTTON) {
         switch (state) {
@@ -256,10 +257,10 @@ void mouse(int button, int state, int x, int y) {
                 push(&master);
 
                 // convert coordinates
-                window2pixel(&box1, &box2);
+                window2pixel(&box1, &bounds);
 
-                if (box1.x1 == box1.x2 || box1.y1 == box1.y2) {
-                    pixel2mandel(box2.x1, box2.y1, &x_center, &y_center);
+                if (bounds.x1 == bounds.x2 || bounds.y1 == bounds.y2) {
+                    pixel2mandel(bounds.x1, bounds.y1, &x_center, &y_center);
                     x_half = (actual.x2 - actual.x1) / 2.0;
                     y_half = (actual.y2 - actual.y1) / 2.0;
 
@@ -270,8 +271,8 @@ void mouse(int button, int state, int x, int y) {
                     master.y2 = y_center + y_half;
                 } else {
                     // zoom in on box
-                    pixel2mandel(box2.x1, box2.y1, &master.x1, &master.y1);
-                    pixel2mandel(box2.x2, box2.y2, &master.x2, &master.y2);
+                    pixel2mandel(bounds.x1, bounds.y1, &master.x1, &master.y1);
+                    pixel2mandel(bounds.x2, bounds.y2, &master.x2, &master.y2);
                 }
 
                 drawBox = GL_FALSE;
