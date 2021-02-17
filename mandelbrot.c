@@ -41,8 +41,10 @@ void display(void) {
     } else {
         // draw single line
         glRasterPos2i(0, lineNumber);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, lineNumber);
         glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
     }
 
