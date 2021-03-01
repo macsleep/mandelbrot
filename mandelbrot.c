@@ -34,11 +34,19 @@ void display(void) {
         clearScreen = GL_FALSE;
     }
 
+    /*
+     * This redraws the whole image if the windows damage
+     * flag is set. Some of the older window managers require
+     * the application to help redraw the screen.
+     */
     if (glutLayerGet(GLUT_NORMAL_DAMAGED)) {
-        // draw whole screen
         glRasterPos2i(0, 0);
         glDrawPixels(width, height, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-    } else {
+        drawLine = GL_FALSE;
+        clearBox = GL_FALSE;
+    }
+
+    if (drawLine) {
         // draw single line
         glRasterPos2i(0, lineNumber);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, width);
@@ -46,6 +54,7 @@ void display(void) {
         glDrawPixels(width, 1, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
+        drawLine = GL_FALSE;
     }
 
     if (clearBox) {
@@ -63,14 +72,11 @@ void display(void) {
         glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
         glPixelStorei(GL_UNPACK_SKIP_ROWS, 0);
         glPixelStorei(GL_UNPACK_SKIP_PIXELS, 0);
-
         clearBox = GL_FALSE;
     }
 
     if (drawBox) {
-        // prepare clear box
         window2pixel(&box1, &box2);
-        clearBox = GL_TRUE;
 
         // draw zoom box
         glColor3f(1.0, 1.0, 1.0);
@@ -80,6 +86,7 @@ void display(void) {
         glVertex2i(box2.x2 + 1, box2.y2);
         glVertex2i(box2.x1 + 1, box2.y2);
         glEnd();
+        clearBox = GL_TRUE;
     }
 
     glFlush();
@@ -337,6 +344,7 @@ void idle(void) {
 
         // draw new line
         lineNumber = py;
+        drawLine = GL_TRUE;
         glutPostRedisplay();
 
         if (++py >= height) {
